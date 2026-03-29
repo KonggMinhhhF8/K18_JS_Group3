@@ -192,5 +192,21 @@
   </main>
 </div>
 
+<script>
+
+  // Kiểm tra xem người dùng đã đăng nhập hay chưa Nếu chưa đăng nhập, chuyển hướng đến trang đăng nhập
+  window.onload = function() {
+    const accessToken = localStorage.getItem('access_token');
+    const loggedIn = localStorage.getItem('loggedIn');
+
+    if (!accessToken || loggedIn !== 'true') {
+      window.location.href = '../Login/index.html';
+    } else {
+      console.log('Đăng nhập thành công, Access Token đã được tìm thấy:', accessToken);
+    }
+  };
+  //----------------------------------------------------------------------
+</script>
+
 </body>
 </html>

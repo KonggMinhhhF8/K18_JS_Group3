@@ -117,5 +117,131 @@
   </div>
 </div>
 
+<script>
+
+
+  // Kiểm tra xem người dùng đã đăng nhập hay chưa Nếu chưa đăng nhập, chuyển hướng đến trang đăng nhập
+  window.onload = function() {
+    const accessToken = localStorage.getItem('access_token');
+    const loggedIn = localStorage.getItem('loggedIn');
+
+    if (!accessToken || loggedIn !== 'true') {
+      window.location.href = '../Login/index.html';
+    } else {
+      console.log('Đăng nhập thành công, Access Token đã được tìm thấy:', accessToken);
+    }
+  };
+
+  //----------------------------------------------------------------------
+  function decodeJWT(token) {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+  }
+
+  function isTokenExpired(token) {
+    const decoded = decodeJWT(token);
+    const now = Date.now() / 1000; // Thời gian hiện tại (giây)
+    return decoded.exp < now;
+  }
+
+  async function refreshAccessToken() {
+    const refreshToken = localStorage.getItem('refresh_token');
+    const response = await fetch('https://yourapi.com/refresh-token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        refreshToken: refreshToken
+      })
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      localStorage.setItem('access_token', data.accessToken);
+      return data.accessToken;
+    } else {
+      throw new Error('Không thể làm mới token');
+    }
+  }
+
+
+  document.getElementById('searchInput').addEventListener('input', async function(event) {
+    const searchQuery = event.target.value.trim();  // Lấy từ khóa tìm kiếm từ ô input
+
+    if (searchQuery === '') {
+      document.getElementById('productList').innerHTML = '';  // Nếu ô tìm kiếm trống, xóa danh sách sản phẩm
+      return;
+    }
+
+    const token = localStorage.getItem('access_token');  // Lấy Access Token từ localStorage
+    if (!token) {
+      alert('Vui lòng đăng nhập để tiếp tục.');
+      window.location.href = '../Login/index.html';  // Chuyển hướng về trang đăng nhập
+      return;
+    }
+
+    try {
+      // Gửi yêu cầu tìm kiếm tới API
+      const response = await fetch(`https://k305jhbh09.execute-api.ap-southeast-1.amazonaws.com/products?search=${encodeURIComponent(searchQuery)}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Không thể tải dữ liệu sản phẩm. Mã lỗi: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.length === 0) {
+        alert('Không tìm thấy sản phẩm nào');
+      }
+
+      displayProducts(data);  // Gọi hàm hiển thị sản phẩm
+
+    } catch (error) {
+      console.error('Lỗi khi tìm kiếm sản phẩm:', error);
+      alert('Không thể tìm kiếm sản phẩm, vui lòng thử lại.');
+    }
+  });
+
+  // Hàm hiển thị sản phẩm lên giao diện
+  function displayProducts(products) {
+    const productTableBody = document.getElementById('productTableBody');
+    productTableBody.innerHTML = '';  // Xóa danh sách sản phẩm cũ
+
+    if (products.length === 0) {
+      productTableBody.innerHTML = '<tr><td colspan="6" class="no-results">Không tìm thấy sản phẩm nào</td></tr>';
+      return;
+    }
+
+    products.forEach(product => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+      <td><img src="${product.imageUrl || 'https://via.placeholder.com/50'}" alt="sp" class="img-thumb"></td>
+      <td>
+        <strong>${cleanString(product.name)}</strong><br>
+        <small>SKU: ${cleanString(product.sku)}</small>
+      </td>
+      <td>${cleanString(product.category || 'Chưa có danh mục')}</td>
+      <td>${cleanString(product.price)} VND</td>
+      <td>${product.remaining}</td>
+      <td>
+        <button class="btn-icon edit"><i class="fas fa-edit"></i></button>
+        <button class="btn-icon delete"><i class="fas fa-trash"></i></button>
+      </td>
+    `;
+      productTableBody.appendChild(row);
+    });
+  }
+</script>
 </body>
 </html>
