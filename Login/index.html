@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Đăng Nhập</title>
+    <style>
+        /* Reset một số thuộc tính mặc định */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-form h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: #4CAF50;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .login-btn:hover {
+            background-color: #45a049;
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .signup-link a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <form class="login-form" id="login-form">
+        <h2>Đăng Nhập</h2>
+        <div class="input-group">
+            <label for="username">Email</label>
+            <input type="email" id="username" name="username" placeholder="Nhập email của bạn" required autocomplete="username">
+        </div>
+        <div class="input-group">
+            <label for="password">Mật Khẩu</label>
+            <input type="password" id="password" name="password" placeholder="Nhập mật khẩu của bạn" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="login-btn">Đăng Nhập</button>
+        <p class="signup-link">Chưa có tài khoản? <a href="#">Đăng ký ngay</a></p>
+        <p id="error-message" style="color: red; display: none; text-align: center"> email hoặc mật khẩu không chính xác</p>
+    </form>
+</div>
+
+<script>
+    // Hàm đăng nhập
+    function login(event) {
+        // Ngừng hành động mặc định của form (không tải lại trang khi submit)
+        event.preventDefault();
+
+        // Lấy giá trị email và mật khẩu từ form
+        const email = document.querySelector('#username').value;
+        const password = document.querySelector('#password').value;
+
+        // Kiểm tra xem email và mật khẩu có đúng hay không
+        if (email === 'vuongductien@test.com' && password === '12345678') {
+            // lưu trạng thái đăng nhập vào localStorage
+            localStorage.setItem('loggedIn', 'true');
+            // chuyển hướng đến trang tổng quan
+            window.location.href = '../../app/index.html';
+        } else {
+
+            // Nếu không đúng, hiển thị thông báo lỗi
+            document.querySelector('#error-message').style.display = 'block';
+        }
+    }
+
+    // Lắng nghe sự kiện submit từ form
+    document.querySelector('#login-form').addEventListener('submit', login);
+
+
+</script>
+</body>
+</html>

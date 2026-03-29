@@ -176,6 +176,19 @@
 
   menuToggle.addEventListener('click', toggleMenu);
   overlay.addEventListener('click', toggleMenu);
+
+  // Kiểm tra xem người dùng đã đăng nhập hay chưa Nếu chưa đăng nhập, chuyển hướng đến trang đăng nhập
+  window.onload = function() {
+    if (localStorage.getItem('loggedIn') !== 'true') {
+      window.location.href = '/Login/index.html';
+    }
+  };
+
+
+
+
+
+
 </script>
 </body>
 </html>
