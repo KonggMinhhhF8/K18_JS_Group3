@@ -106,6 +106,84 @@
 
       .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
       .overlay.active { display: block; }
+
+
+      .sidebar h2 {
+        margin-bottom: 40px;
+        text-align: center;
+        color: var(--primary-color);
+        padding: 0 20px;
+      }
+
+      .sidebar ul {
+        list-style: none;
+        padding: 0 10px;
+      }
+
+      .sidebar ul li {
+        padding: 0;
+        margin-bottom: 8px;
+        list-style: none;
+        border-bottom: 1px solid #34495e;
+      }
+
+      /* Thẻ a - Trạng thái mặc định */
+      .sidebar ul li a {
+        display: flex;
+        align-items: center;
+        padding: 15px 20px; /* Độ dày mục menu */
+        text-decoration: none;
+        color: #ecf0f1;
+        width: 100%;
+        transition: all 0.3s ease;
+        background-color: transparent;
+        border-radius: 8px; /* Bo góc mục menu (Giống ảnh 1) */
+      }
+
+      /* Trạng thái Active mặc định (Khi chưa rà chuột vào Menu) */
+      .sidebar ul li.active a {
+        background-color: #34495e; /* Màu nền xanh đậm mờ */
+        color: var(--primary-color); /* Chữ màu xanh sáng */
+      }
+
+      /* Hiệu ứng HOVER logic:
+         Khi hover vào vùng UL, thằng .active sẽ mất nền xanh */
+      .sidebar ul:hover li.active a {
+        background-color: transparent;
+        color: #fff;
+      }
+
+      /* Khi trỏ trực tiếp vào mục bất kỳ: Đổi màu chữ xanh, KHÔNG hiện nền (Giống ảnh 1) */
+      .sidebar ul li a:hover {
+        color: var(--primary-color) !important;
+        background-color: transparent !important;
+      }
+
+      /* Riêng mục đang Active khi hover vào thì hiện lại nền xanh */
+      .sidebar ul li.active a:hover {
+        background-color: #34495e !important;
+        color: var(--primary-color) !important;
+      }
+
+      /* Căn chỉnh icon cho thẳng hàng */
+      .sidebar ul li a i {
+        margin-right: 12px;
+        width: 20px;
+        text-align: center;
+        font-size: 1.1rem;
+      }
+
+      .sidebar ul li a span {
+        font-size: 0.95rem;
+      }
+
+      /* Căn chỉnh icon cho thẳng hàng */
+      .sidebar ul li a i {
+        margin-right: 12px;
+        width: 20px;
+        text-align: center;
+      }
+
   </style>
 </head>
 <body>
@@ -116,10 +194,11 @@
   <aside class="sidebar" id="sidebar">
     <h2>ShopAdmin</h2>
     <ul>
-      <li class="active"><i class="fas fa-home"></i> Tổng quan</li>
-      <li><i class="fas fa-box"></i> Sản phẩm</li>
-      <li><i class="fas fa-shopping-bag"></i> Đơn hàng</li>
-      <li><i class="fas fa-users"></i> Khách hàng</li>
+      <li class="active"> <a href="index.html"><i class="fas fa-home"></i> Tổng quan</a></li>
+      <li> <a href="products/index.html"><i class="fas fa-box"></i> Sản phẩm</a></li>
+      <li> <a href="orders/index.html"><i class="fas fa-shopping-cart"></i> Đơn hàng</a></li>
+      <li> <a href="customers/index.html"><i class="fas fa-users"></i> Khách hàng</a></li>
+      <li> <a href="reports/index.html"><i class="fas fa-chart-line"></i> Báo cáo</a></li>
     </ul>
   </aside>
 
@@ -176,6 +255,20 @@
 
   menuToggle.addEventListener('click', toggleMenu);
   overlay.addEventListener('click', toggleMenu);
+
+  // Kiểm tra xem người dùng đã đăng nhập hay chưa Nếu chưa đăng nhập, chuyển hướng đến trang đăng nhập
+  window.onload = function() {
+    const accessToken = localStorage.getItem('access_token');
+    const loggedIn = localStorage.getItem('loggedIn');
+
+    // Kiểm tra xem người dùng đã đăng nhập chưa
+    if (!accessToken || loggedIn !== 'true') {
+      window.location.href = 'Login/index.html';
+    } else {
+      console.log('Đăng nhập thành công, Access Token đã được tìm thấy:', accessToken);
+    }
+  };
+
 </script>
 </body>
 </html>
