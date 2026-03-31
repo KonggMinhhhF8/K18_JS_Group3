@@ -6,17 +6,66 @@
   <title>Quản Lý Sản Phẩm | ShopAdmin</title>
   <link rel="stylesheet" href="../style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+
+    .sidebar ul li {
+      border-bottom: 1px solid #34495e;
+    }
+
+    /* Thẻ a(Trạng thái mặc định) */
+    .sidebar ul li a {
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      text-decoration: none;
+      color: #fff;
+      width: 100%;
+      transition: all 0.3s ease;
+      background-color: transparent;
+    }
+
+    /* Trạng thái Active mặc định (Khi chưa rà chuột vào Menu) */
+    .sidebar ul li.active a {
+      background-color: #34495e;
+      color: #3498db;
+    }
+
+    /* Khi hover vào ul (vùng menu), ép thằng .active mất nền. */
+    .sidebar ul:hover li.active a {
+      background-color: transparent;
+      color: #fff;
+    }
+
+    /* Hiệu ứng Hover cho mục đang được trỏ chuột */
+    .sidebar ul li a:hover {
+      color: #3498db;
+      background-color: rgba(52, 73, 94, 0.5);
+    }
+
+    /* Đảm bảo mục đang active mà được hover thì vẫn giữ màu xanh */
+    .sidebar ul li.active a:hover {
+      color: #3498db;
+      background-color: #34495e;
+    }
+
+    /* Căn chỉnh icon cho thẳng hàng */
+    .sidebar ul li a i {
+      margin-right: 12px;
+      width: 20px;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
 <div class="container">
   <aside class="sidebar">
     <h2>ShopAdmin</h2>
     <ul>
-      <li><i class="fas fa-home"></i> Tổng quan</li>
-      <li class="active"><i class="fas fa-box"></i> Sản phẩm</li>
-      <li><i class="fas fa-shopping-cart"></i> Đơn hàng</li>
-      <li><i class="fas fa-users"></i> Khách hàng</li>
-      <li><i class="fas fa-chart-line"></i> Báo cáo</li>
+      <li> <a href="../index.html"><i class="fas fa-home"></i> Tổng quan</a></li>
+      <li  class="active"> <a href="../products/index.html"><i class="fas fa-box"></i> Sản phẩm</a></li>
+      <li> <a href="../orders/index.html"><i class="fas fa-shopping-cart"></i> Đơn hàng</a></li>
+      <li> <a href="../customers/index.html"><i class="fas fa-users"></i> Khách hàng</a></li>
+      <li> <a href="../reports/index.html"><i class="fas fa-chart-line"></i> Báo cáo</a></li>
     </ul>
   </aside>
 
@@ -117,100 +166,6 @@
   </div>
 </div>
 
-<script>
-
-
-  // Kiểm tra xem người dùng đã đăng nhập hay chưa Nếu chưa đăng nhập, chuyển hướng đến trang đăng nhập
-  window.onload = function() {
-    const accessToken = localStorage.getItem('access_token');
-    const loggedIn = localStorage.getItem('loggedIn');
-
-    if (!accessToken || loggedIn !== 'true') {
-      window.location.href = '../Login/index.html';
-    } else {
-      console.log('Đăng nhập thành công, Access Token đã được tìm thấy:', accessToken);
-    }
-  };
-
-  //----------------------------------------------------------------------
-  document.getElementById('searchInput').addEventListener('input', async function(event) {
-    const searchQuery = event.target.value.trim();
-
-    if (searchQuery === '') {
-      document.getElementById('productList').innerHTML = '';  // Nếu ô tìm kiếm trống, xóa danh sách sản phẩm
-      return;
-    }
-
-    let token = localStorage.getItem('access_token');
-    if (!token) {
-      alert('Vui lòng đăng nhập để tiếp tục.');
-      window.location.href = '../Login/index.html';
-      return;
-    }
-
-    // Kiểm tra xem token có hết hạn không
-    if (isTokenExpired(token)) {
-      try {
-        token = await refreshAccessToken();  // Làm mới token nếu hết hạn
-      } catch (error) {
-        console.error('Không thể làm mới token:', error);
-        alert('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.');
-        window.location.href = '../Login/index.html';
-        return;
-      }
-    }
-
-    try {
-      // Gửi yêu cầu tìm kiếm tới API
-      const response = await fetch(`https://k305jhbh09.execute-api.ap-southeast-1.amazonaws.com/products?search=${encodeURIComponent(searchQuery)}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Không thể tải dữ liệu sản phẩm. Mã lỗi: ${response.status}`);
-      }
-
-      const data = await response.json();
-      if (data.length === 0) {
-        document.getElementById('productList').innerHTML = '<p>Không tìm thấy sản phẩm nào.</p>';
-      } else {
-        displayProducts(data);  // Gọi hàm hiển thị sản phẩm
-      }
-
-    } catch (error) {
-      console.error('Lỗi khi tìm kiếm sản phẩm:', error);
-      alert('Không thể tìm kiếm sản phẩm, vui lòng thử lại.');
-    }
-  });
-
-  // Hàm hiển thị sản phẩm lên giao diện
-  function displayProducts(products) {
-    const productTableBody = document.getElementById('productTableBody');
-    productTableBody.innerHTML = '';  // Xóa danh sách sản phẩm cũ
-
-    products.forEach(product => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td><img src="${product.imageUrl || 'https://via.placeholder.com/50'}" alt="sp" class="img-thumb"></td>
-        <td>
-            <strong>${cleanString(product.name)}</strong><br>
-            <small>SKU: ${cleanString(product.sku)}</small>
-        </td>
-        <td>${cleanString(product.category || 'Chưa có danh mục')}</td>
-        <td>${cleanString(product.price)} VND</td>
-        <td>${product.remaining}</td>
-        <td>
-            <button class="btn-icon edit"><i class="fas fa-edit"></i></button>
-            <button class="btn-icon delete"><i class="fas fa-trash"></i></button>
-        </td>
-        `;
-      productTableBody.appendChild(row);
-    });
-  }
-</script>
+<script src="search.js"></script>
 </body>
 </html>

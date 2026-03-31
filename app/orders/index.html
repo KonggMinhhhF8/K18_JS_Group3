@@ -75,6 +75,54 @@
       .btn-export { background: var(--primary-color); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; }
 
       small { color: #7f8c8d; display: block; margin-top: 2px; }
+
+
+      .sidebar ul li {
+        border-bottom: 1px solid #34495e;
+      }
+
+      /* Thẻ a(Trạng thái mặc định) */
+      .sidebar ul li a {
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        text-decoration: none;
+        color: #fff;
+        width: 100%;
+        transition: all 0.3s ease;
+        background-color: transparent;
+      }
+
+      /* Trạng thái Active mặc định (Khi chưa rà chuột vào Menu) */
+      .sidebar ul li.active a {
+        background-color: #34495e;
+        color: #3498db;
+      }
+
+      /* Khi hover vào ul (vùng menu), ép thằng .active mất nền. */
+      .sidebar ul:hover li.active a {
+        background-color: transparent;
+        color: #fff;
+      }
+
+      /* Hiệu ứng Hover cho mục đang được trỏ chuột */
+      .sidebar ul li a:hover {
+        color: #3498db;
+        background-color: rgba(52, 73, 94, 0.5);
+      }
+
+      /* Đảm bảo mục đang active mà được hover thì vẫn giữ màu xanh */
+      .sidebar ul li.active a:hover {
+        color: #3498db;
+        background-color: #34495e;
+      }
+
+      /* Căn chỉnh icon cho thẳng hàng */
+      .sidebar ul li a i {
+        margin-right: 12px;
+        width: 20px;
+        text-align: center;
+      }
   </style>
 </head>
 <body>
@@ -83,18 +131,18 @@
   <aside class="sidebar">
     <h2>ShopAdmin</h2>
     <ul>
-      <li><i class="fas fa-home"></i> Tổng quan</li>
-      <li><i class="fas fa-box"></i> Sản phẩm</li>
-      <li class="active"><i class="fas fa-shopping-cart"></i> Đơn hàng</li>
-      <li><i class="fas fa-users"></i> Khách hàng</li>
-      <li><i class="fas fa-chart-line"></i> Báo cáo</li>
+      <li> <a href="../index.html"><i class="fas fa-home"></i> Tổng quan</a></li>
+      <li> <a href="../products/index.html"><i class="fas fa-box"></i> Sản phẩm</a></li>
+      <li class="active"> <a href="../orders/index.html"><i class="fas fa-shopping-cart"></i> Đơn hàng</a></li>
+      <li> <a href="../customers/index.html"><i class="fas fa-users"></i> Khách hàng</a></li>
+      <li> <a href="../reports/index.html"><i class="fas fa-chart-line"></i> Báo cáo</a></li>
     </ul>
   </aside>
 
   <main class="main-content">
     <header>
       <div class="search-bar">
-        <input type="text" placeholder="Tìm mã đơn, tên khách hàng...">
+        <input type="text" id="search-bar" placeholder="Tìm mã đơn, tên khách hàng...">
       </div>
       <button class="btn-export"><i class="fas fa-download"></i> Xuất Excel</button>
     </header>
@@ -142,7 +190,7 @@
           <th>Thao tác</th>
         </tr>
         </thead>
-        <tbody>
+        <tbody id="orderTableBody">
         <tr>
           <td><strong>#ORD-7721</strong></td>
           <td>Nguyễn Văn An<br><small>0912.345.xxx</small></td>
@@ -192,21 +240,9 @@
   </main>
 </div>
 
-<script>
 
-  // Kiểm tra xem người dùng đã đăng nhập hay chưa Nếu chưa đăng nhập, chuyển hướng đến trang đăng nhập
-  window.onload = function() {
-    const accessToken = localStorage.getItem('access_token');
-    const loggedIn = localStorage.getItem('loggedIn');
+<script src="search.js"></script>
 
-    if (!accessToken || loggedIn !== 'true') {
-      window.location.href = '../Login/index.html';
-    } else {
-      console.log('Đăng nhập thành công, Access Token đã được tìm thấy:', accessToken);
-    }
-  };
-  //----------------------------------------------------------------------
-</script>
 
 </body>
 </html>
