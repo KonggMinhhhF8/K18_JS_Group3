@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Đăng Nhập</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="login-container">
+    <form class="login-form" id="login-form">
+        <h2>Đăng Nhập</h2>
+        <div class="input-group">
+            <label for="username">Email</label>
+            <input type="email" id="username" name="username" placeholder="Nhập email của bạn" required autocomplete="username">
+        </div>
+        <div class="input-group">
+            <label for="password">Mật Khẩu</label>
+            <input type="password" id="password" name="password" placeholder="Nhập mật khẩu của bạn" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="login-btn">Đăng Nhập</button>
+        <p class="signup-link">Chưa có tài khoản? <a href="#">Đăng ký ngay</a></p>
+        <p id="error-message" style="color: red; display: none; text-align: center"> email hoặc mật khẩu không chính xác</p>
+    </form>
+</div>
+
+<script src="login.js"></script>
+
+</body>
+</html>
+
+
+

@@ -207,36 +207,30 @@
         background: #e0e0e0;
       }
 
-      small {
-        color: #7f8c8d;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <aside class="sidebar">
-        <h2>ShopAdmin</h2>
-        <ul>
-          <li><i class="fas fa-home"></i> Tổng quan</li>
-          <li><i class="fas fa-box"></i> Sản phẩm</li>
-          <li><i class="fas fa-shopping-cart"></i> Đơn hàng</li>
-          <li class="active"><i class="fas fa-users"></i> Khách hàng</li>
-          <li><i class="fas fa-chart-line"></i> Báo cáo</li>
-        </ul>
-      </aside>
+      small { color: #7f8c8d; }
+  </style>
+</head>
+<body>
 
-      <main class="main-content">
-        <header>
-          <div class="search-bar">
-            <input
-              type="text"
-              placeholder="Tìm tên, email hoặc số điện thoại..."
-            />
-          </div>
-          <button class="btn-add">
-            <i class="fas fa-user-plus"></i> Thêm khách hàng
-          </button>
-        </header>
+<div class="container">
+  <aside class="sidebar">
+    <h2>ShopAdmin</h2>
+    <ul>
+      <li><i class="fas fa-home"></i> Tổng quan</li>
+      <li><i class="fas fa-box"></i> Sản phẩm</li>
+      <li><i class="fas fa-shopping-cart"></i> Đơn hàng</li>
+      <li class="active"><i class="fas fa-users"></i> Khách hàng</li>
+      <li><i class="fas fa-chart-line"></i> Báo cáo</li>
+    </ul>
+  </aside>
+
+  <main class="main-content">
+    <header>
+      <div class="search-bar">
+        <input type="text" placeholder="Tìm tên, email hoặc số điện thoại...">
+      </div>
+      <button class="btn-add"><i class="fas fa-user-plus"></i> Thêm khách hàng</button>
+    </header>
 
         <section class="stats">
           <div class="card">
@@ -275,7 +269,7 @@
           <th>Thao tác</th>
         </tr>
         </thead>
-        <tbody>
+        <tbody id="customerTableBody">
         <tr>
           <td>
             <div class="cust-info">
@@ -333,11 +327,11 @@
             <button class="btn-action" title="Sửa"><i class="fas fa-user-edit"></i></button>
           </td>
         </tr>
-        </tbody> -->
-          </table>
-        </section>
-      </main>
-    </div>
-    <script src="../data-table/main.js"></script>
-  </body>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</div>
+
+</body>
 </html>
