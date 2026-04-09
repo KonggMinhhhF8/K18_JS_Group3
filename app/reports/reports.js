@@ -1,7 +1,7 @@
 
 const API_BASE = 'https://k305jhbh09.execute-api.ap-southeast-1.amazonaws.com';
 
-// Biến toàn cục để quản lý instance biểu đồ (tránh lỗi ghi đè)
+// Biến toàn cục
 let revenueChartInstance = null;
 let categoryChartInstance = null;
 
@@ -31,11 +31,10 @@ async function handleRefreshToken() {
     return false;
 }
 
-// 3. Hàm Fetch có xác thực và tự động sửa lỗi Token
 async function authorizedFetch(url, options = {}) {
     let token = localStorage.getItem('access_token');
 
-    // Xử lý trường hợp token bị lưu dưới dạng chuỗi '"abc"' (thừa dấu ngoặc kép)
+    // Xử lý trường hợp token bị lưu dưới dạng chuỗi '"abc"'
     if (token && token.startsWith('"') && token.endsWith('"')) {
         token = token.slice(1, -1);
     }
@@ -56,7 +55,6 @@ async function authorizedFetch(url, options = {}) {
                 headers['Authorization'] = `Bearer ${newToken}`;
                 return await fetch(url, { ...options, headers });
             } else {
-                // Nếu refresh thất bại, đá về trang login
                 localStorage.clear();
                 window.location.href = '../Login/index.html';
                 return null;
@@ -69,7 +67,7 @@ async function authorizedFetch(url, options = {}) {
     }
 }
 
-// 4. Hàm lấy dữ liệu chính
+// 4. Hàm lấy dữ liệu
 async function fetchDataAndRender() {
     console.log("Đang tải dữ liệu từ API...");
 
@@ -115,7 +113,7 @@ function renderDashboard(orders, products, customers) {
         productStats[pName].revenue += revenue;
     });
 
-    // Cập nhật các thẻ thống kê (Stat Cards)
+    // Cập nhật các thẻ thống kê
     const statValues = document.querySelectorAll('.stat-card .value');
     if (statValues.length >= 4) {
         statValues[0].innerText = formatCurrency(totalRevenue);
@@ -163,7 +161,6 @@ function drawRevenueChart(orders) {
         dayLabels.push(key);
     }
 
-    // Đổ dữ liệu từ API vào
     orders.forEach(order => {
         const dateSource = order.date || order.createdAt;
         if (!dateSource) return;
