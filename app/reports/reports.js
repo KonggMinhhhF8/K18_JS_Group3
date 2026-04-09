@@ -48,7 +48,6 @@ async function authorizedFetch(url, options = {}) {
     try {
         let response = await fetch(url, { ...options, headers });
 
-        // Nếu gặp lỗi 400 (Bad Request) hoặc 401 (Unauthorized)
         if (response.status === 401 || response.status === 400) {
             console.warn(`Lỗi ${response.status}, đang thử cấp lại token...`);
             const isRefreshed = await handleRefreshToken();
@@ -94,7 +93,6 @@ async function fetchDataAndRender() {
 
 // 5. Hàm hiển thị dữ liệu lên giao diện
 function renderDashboard(orders, products, customers) {
-    // Tính toán số liệu
     let totalRevenue = 0;
     let totalProfit = 0;
     let productStats = {};
@@ -148,56 +146,88 @@ function renderDashboard(orders, products, customers) {
 }
 
 // 6. Vẽ biểu đồ Doanh thu
+
 function drawRevenueChart(orders) {
     const ctx = document.getElementById('revenueChart').getContext('2d');
     if (revenueChartInstance) revenueChartInstance.destroy();
 
-    // Gom dữ liệu doanh thu theo ngày (Ví dụ 7 ngày gần nhất)
-    const labels = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
-    const data = [12, 19, 15, 25, 22, 30, 28].map(v => v * 1000000); // Demo dữ liệu biến động
+    const revenueMap = {};
+    const dayLabels = [];
+
+    // Tạo mốc 7 ngày gần nhất
+    for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        revenueMap[key] = 0;
+        dayLabels.push(key);
+    }
+
+    // Đổ dữ liệu từ API vào
+    orders.forEach(order => {
+        const dateSource = order.date || order.createdAt;
+        if (!dateSource) return;
+
+        const oDate = new Date(dateSource);
+        if (!isNaN(oDate)) {
+            const oKey = `${oDate.getFullYear()}-${String(oDate.getMonth() + 1).padStart(2, '0')}-${String(oDate.getDate()).padStart(2, '0')}`;
+
+            if (revenueMap.hasOwnProperty(oKey)) {
+                const qty = Number(order.amount) || 0;
+                const price = Number(order.product?.price) || 0;
+                revenueMap[oKey] += (qty * price);
+            }
+        }
+    });
 
     revenueChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: labels,
+            labels: dayLabels.map(k => k.split('-').reverse().slice(0, 2).join('/')),
             datasets: [{
-                label: 'Doanh thu (VNĐ)',
-                data: data,
+                label: 'Doanh thu thực tế (VNĐ)',
+                data: dayLabels.map(k => revenueMap[k]),
                 borderColor: '#3498db',
                 backgroundColor: 'rgba(52, 152, 219, 0.1)',
                 fill: true,
-                tension: 0.4
+                tension: 0.4,
+                pointRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true, ticks: { callback: v => v.toLocaleString('vi-VN') + 'đ' } }
+            }
+        }
+    });
+}
+
+// 7. Vẽ biểu đồ Cơ cấu Sản phẩm
+
+function drawCategoryChart(products) {
+    const ctx = document.getElementById('categoryChart').getContext('2d');
+    if (categoryChartInstance) categoryChartInstance.destroy();
+
+    const catStats = {};
+    products.forEach(p => {
+        const cat = p.category?.name || "Khác";
+        catStats[cat] = (catStats[cat] || 0) + 1;
+    });
+
+    categoryChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(catStats),
+            datasets: [{
+                data: Object.values(catStats),
+                backgroundColor: ['#3498db', '#2ecc71', '#f1c40f', '#e74a3b']
             }]
         },
         options: { responsive: true, maintainAspectRatio: false }
     });
 }
 
-// 7. Vẽ biểu đồ Cơ cấu Sản phẩm
-function drawCategoryChart(products) {
-    const ctx = document.getElementById('categoryChart').getContext('2d');
-    if (categoryChartInstance) categoryChartInstance.destroy();
-
-    const catData = {};
-    products.forEach(p => {
-        const catName = p.category?.name || "Khác";
-        catData[catName] = (catData[catName] || 0) + 1;
-    });
-
-    categoryChartInstance = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: Object.keys(catData),
-            datasets: [{
-                data: Object.values(catData),
-                backgroundColor: ['#3498db', '#2ecc71', '#f1c40f', '#e74c3c']
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: { legend: { position: 'bottom' } }
-        }
-    });
-}
 
 window.onload = fetchDataAndRender;
